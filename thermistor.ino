@@ -100,6 +100,7 @@ void showPhase() {
 }
 
 void cyclePhase() {
+  setLoggingOff();
   if (selectedItem == (arrayCount - 1)) {
     selectedItem = 0;
   } else {
