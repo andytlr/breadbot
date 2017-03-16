@@ -11,18 +11,23 @@ float logR2, R2, T, Tc;
 float Tdesired = 27.0;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
-int arrayCount = 5;
-String fermentationTypes[] = {"Elapsed", "Autolyse", "Bulk Ferment", "Bench Rest", "Proofing"};
+String fermentationTypes[] = {"Pre-Ferment", "Autolyse", "Bulk Ferment", "Bench Rest", "Proofing"};
+int selectedItem = 0;
+int arrayCount = sizeof(fermentationTypes) / sizeof(fermentationTypes[0]);
 
 void setup() {
   Serial.begin(9600);
   pinMode(relayPin, OUTPUT);
 
+  Serial.print("Elapsed, ");
+  
   // Print out the header for the CSV
-  // I really need to know the fucking length of the array
   for (int iterator = 0; iterator < arrayCount; iterator++) {
-    Serial.print(fermentationTypes[iterator] + ", ");
-    if (iterator == 4) Serial.println(fermentationTypes[iterator]);
+    if (iterator != (arrayCount - 1)) {
+      Serial.print(fermentationTypes[iterator] + ", ");
+    } else {
+      Serial.println(fermentationTypes[iterator]);
+    }
   }
 }
 
@@ -36,8 +41,6 @@ void loop() {
   T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
   Tc = T - 273.15;
   Tc = round(Tc*10)/10.0;
-  
-  logAutolyse();
 
   lcd.print(Tc,1);
   lcd.print((char)223);
@@ -53,16 +56,88 @@ void loop() {
       heaterOff();
   }
 
+  showPhase();
+//  log();
+//  cyclePhase();
+
   delay(1000);
 }
 
-void logAutolyse() {
+void showPhase() {
+  lcd.setCursor(0, 1);
+  lcd.print(fermentationTypes[selectedItem]);
+}
+
+void cyclePhase() {
+  if (selectedItem == (arrayCount - 1)) {
+    selectedItem = 0;
+  } else {
+    selectedItem += 1;
+  }
+}
+
+void log() {
+  if (selectedItem == 0) {
+    logPreFerment();
+  } else if (selectedItem == 1) {
+    logAutolyse();
+  } else if (selectedItem == 2) {
+    logBulkFerment();
+  } else if (selectedItem == 3) {
+    logBenchRest();
+  } else if (selectedItem == 4) {
+    logProofing();
+  }
+}
+
+void logPreFerment() {
   Serial.print(formatTime(millis()));
   Serial.print(", ");
   Serial.print(Tc);
   Serial.print(", ");
   Serial.print(", ");
+  Serial.print(", ");
   Serial.println(", ");
+}
+
+void logAutolyse() {
+  Serial.print(formatTime(millis()));
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(Tc);
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.println(", ");
+}
+
+void logBulkFerment() {
+  Serial.print(formatTime(millis()));
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(Tc);
+  Serial.print(", ");
+  Serial.println(", ");
+}
+
+void logBenchRest() {
+  Serial.print(formatTime(millis()));
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(Tc);
+  Serial.println(", ");
+}
+
+void logProofing() {
+  Serial.print(formatTime(millis()));
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.print(", ");
+  Serial.println(Tc);
 }
 
 String formatTime(unsigned long time) {
@@ -93,12 +168,12 @@ String formatTime(unsigned long time) {
 
 void heaterOn() {
   digitalWrite(relayPin, HIGH);
-  lcd.setCursor(0, 1);
-  lcd.print("Heater on");
+//  lcd.setCursor(0, 1);
+//  lcd.print("Heater on");
 }
 
 void heaterOff() {
   digitalWrite(relayPin, LOW);
-  lcd.setCursor(0, 1);
-  lcd.print("Heater off");
+//  lcd.setCursor(0, 1);
+//  lcd.print("Heater off");
 }
