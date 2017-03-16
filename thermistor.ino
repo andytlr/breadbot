@@ -11,6 +11,8 @@ float logR2, R2, T, Tc;
 float Tdesired = 27.0;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
+bool logging = false;
+
 String fermentationTypes[] = {"Pre-Ferment", "Autolyse", "Bulk Ferment", "Bench Rest", "Proofing"};
 int selectedItem = 0;
 int arrayCount = sizeof(fermentationTypes) / sizeof(fermentationTypes[0]);
@@ -29,11 +31,14 @@ void setup() {
       Serial.println(fermentationTypes[iterator]);
     }
   }
+
+  setLoggingOff();
 }
 
 void loop() {
 
   lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
 
   Vo = analogRead(ThermistorPin);
   R2 = R1 * (1023.0 / (float)Vo - 1.0);
@@ -57,10 +62,36 @@ void loop() {
   }
 
   showPhase();
-//  log();
-//  cyclePhase();
+
+  if (logging == true) {
+    lcd.setCursor(14, 1);
+    lcd.print("ON");
+    log();
+  } else {
+    lcd.setCursor(13, 1);
+    lcd.print("OFF");
+  }
 
   delay(1000);
+}
+
+//  cyclePhase();
+//  cycleLogging();
+
+void cycleLogging() {
+  if (logging == true) {
+    setLoggingOff();
+  } else {
+    setLoggingOn();
+  }
+}
+
+void setLoggingOn() {
+  logging = true;
+}
+
+void setLoggingOff() {
+  logging = false;
 }
 
 void showPhase() {
