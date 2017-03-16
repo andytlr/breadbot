@@ -7,7 +7,7 @@ int ThermistorPin = 0;
 int relayPin = 10;
 int Vo;
 float R1 = 10000;
-float logR2, R2, T, Tc;
+float logR2, R2, T, Tc, TcRounded;
 float Tdesired = 27.0;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
 
@@ -46,6 +46,9 @@ void loop() {
   T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
   Tc = T - 273.15;
   Tc = round(Tc*10)/10.0;
+  
+  // This rounds the temp to 0.25 increments, so that hopefully 0.1 changes don't flick the light on and off repeatedly.
+  TcRounded = round(Tc*4.0)/4.0;
 
   lcd.print(Tc,1);
   lcd.print((char)223);
@@ -55,7 +58,7 @@ void loop() {
   lcd.print((char)223);
   lcd.print("C");
 
-  if (Tc < Tdesired) {
+  if (TcRounded < Tdesired) {
       heaterOn();
   } else {
       heaterOff();
@@ -76,9 +79,9 @@ void loop() {
 }
 
 //  cyclePhase();
-//  cycleLogging();
+//  toggleLogging();
 
-void cycleLogging() {
+void toggleLogging() {
   if (logging == true) {
     setLoggingOff();
   } else {
