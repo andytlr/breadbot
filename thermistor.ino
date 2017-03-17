@@ -1,7 +1,15 @@
 
 #include <LiquidCrystal.h>
+#include <SD.h>
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+//LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(A4, A5, 5, 4, 3, 2);
+
+//SPI SD Card Pins
+//MOSI = Pin 11
+//MISO = Pin 12
+//SCLK = PIN 13
+int CS_pin = 8;
 
 int ThermistorPin = 0;
 int relayPin = 10;
@@ -27,16 +35,35 @@ void setup() {
   digitalWrite(cycleButtonPin, HIGH);
   pinMode(logButtonPin, INPUT);
   digitalWrite(logButtonPin, HIGH);
-
-  Serial.print("Elapsed, ");
   
-  // Print out the header for the CSV
-  for (int iterator = 0; iterator < arrayCount; iterator++) {
-    if (iterator != (arrayCount - 1)) {
-      Serial.print(fermentationTypes[iterator] + ", ");
-    } else {
-      Serial.println(fermentationTypes[iterator]);
+  Serial.println("Initializing Card");
+  pinMode(CS_pin, OUTPUT);
+
+  // Initialize Card
+  if (!SD.begin(CS_pin)) {
+    Serial.println("Card Failure");
+    return;
+  }
+  Serial.println("Card Ready");
+
+  // Write log file header
+  File logFile = SD.open("brdlog.csv", FILE_WRITE);
+  if (logFile) {
+    logFile.print("Elapsed, ");
+    Serial.print("Elapsed, ");
+    // Print out the header for the CSV
+    for (int iterator = 0; iterator < arrayCount; iterator++) {
+      if (iterator != (arrayCount - 1)) {
+        logFile.print(fermentationTypes[iterator] + ", ");
+        Serial.print(fermentationTypes[iterator] + ", ");
+      } else {
+        logFile.println(fermentationTypes[iterator]);
+        Serial.println(fermentationTypes[iterator]);
+      }
     }
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
   }
 
   setLoggingOff();
@@ -138,13 +165,27 @@ void log() {
 }
 
 void logPreFerment() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(Tc);
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.println(", ");
+  // Write data to log file
+  File logFile = SD.open("brdlog.csv", FILE_WRITE);
+  if (logFile) {
+    Serial.print(formatTime(millis()));
+    Serial.print(", ");
+    Serial.print(Tc);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.println(", ");
+    logFile.print(formatTime(millis()));
+    logFile.print(", ");
+    logFile.print(Tc);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.println(", ");
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 void logAutolyse() {
