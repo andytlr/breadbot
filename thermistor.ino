@@ -5,6 +5,8 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int ThermistorPin = 0;
 int relayPin = 10;
+int cycleButtonPin = 6;
+int logButtonPin = 7;
 int Vo;
 float R1 = 10000;
 float logR2, R2, T, Tc, TcRounded;
@@ -19,7 +21,12 @@ int arrayCount = sizeof(fermentationTypes) / sizeof(fermentationTypes[0]);
 
 void setup() {
   Serial.begin(9600);
+  
   pinMode(relayPin, OUTPUT);
+  pinMode(cycleButtonPin, INPUT);
+  digitalWrite(cycleButtonPin, HIGH);
+  pinMode(logButtonPin, INPUT);
+  digitalWrite(logButtonPin, HIGH);
 
   Serial.print("Elapsed, ");
   
@@ -36,6 +43,14 @@ void setup() {
 }
 
 void loop() {
+
+  if (!digitalRead(cycleButtonPin) == true) {
+    cyclePhase();
+  }
+
+  if (!digitalRead(logButtonPin) == true) {
+    toggleLogging();
+  }
 
   lcd.begin(16, 2);
   lcd.setCursor(0, 0);
@@ -77,9 +92,6 @@ void loop() {
 
   delay(1000);
 }
-
-//  cyclePhase();
-//  toggleLogging();
 
 void toggleLogging() {
   if (logging == true) {
