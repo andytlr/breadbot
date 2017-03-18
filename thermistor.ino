@@ -29,6 +29,7 @@ File logFile;
 bool logging = false;
 
 String fermentationTypes[] = {"Pre-Ferment", "Autolyse", "Bulk Ferment", "Bench Rest", "Proofing"};
+String fermentationTypesAbbreviated[] = {"Pre-Fer", "Auto", "Bulk", "Rest", "Proof"};
 int selectedItem = 0;
 int arrayCount = sizeof(fermentationTypes) / sizeof(fermentationTypes[0]);
 
@@ -123,14 +124,16 @@ void loop() {
   showPhase();
 
   if (logging == true) {
-//    lcd.setCursor(14, 1);
-//    lcd.print("ON");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
+    lcd.setCursor(0, 1);
+    lcd.print(fermentationTypesAbbreviated[selectedItem]);
     lcd.setCursor(7, 1);
     lcd.print(" " + timeToShow);
     log();
   } else {
-    lcd.setCursor(13, 1);
-    lcd.print("OFF");
+//    lcd.setCursor(13, 1);
+//    lcd.print("Off");
   }
 
   delay(1000);
