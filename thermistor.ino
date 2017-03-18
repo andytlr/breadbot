@@ -20,6 +20,11 @@ float R1 = 10000;
 float logR2, R2, T, Tc, TcRounded;
 float Tdesired = 27.0;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+unsigned long loggingTurnedOnAt;
+
+String timeToShow;
+
+File logFile;
 
 bool logging = false;
 
@@ -36,34 +41,43 @@ void setup() {
   pinMode(logButtonPin, INPUT);
   digitalWrite(logButtonPin, HIGH);
   
-  Serial.println("Initializing Card");
-  pinMode(CS_pin, OUTPUT);
-
-  // Initialize Card
-  if (!SD.begin(CS_pin)) {
-    Serial.println("Card Failure");
-    return;
-  }
-  Serial.println("Card Ready");
+//  Serial.println("Initializing Card");
+//  pinMode(CS_pin, OUTPUT);
+//
+//  // Initialize Card
+//  if (!SD.begin(CS_pin)) {
+//    Serial.println("Card Failure");
+//    return;
+//  }
+//  Serial.println("Card Ready");
 
   // Write log file header
-  File logFile = SD.open("brdlog.csv", FILE_WRITE);
-  if (logFile) {
-    logFile.print("Elapsed, ");
-    Serial.print("Elapsed, ");
-    // Print out the header for the CSV
-    for (int iterator = 0; iterator < arrayCount; iterator++) {
-      if (iterator != (arrayCount - 1)) {
-        logFile.print(fermentationTypes[iterator] + ", ");
-        Serial.print(fermentationTypes[iterator] + ", ");
-      } else {
-        logFile.println(fermentationTypes[iterator]);
-        Serial.println(fermentationTypes[iterator]);
-      }
+//  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+//  if (logFile) {
+//    logFile.print("Elapsed, ");
+//    Serial.print("Elapsed, ");
+//    // Print out the header for the CSV
+//    for (int iterator = 0; iterator < arrayCount; iterator++) {
+//      if (iterator != (arrayCount - 1)) {
+//        logFile.print(fermentationTypes[iterator] + ", ");
+//        Serial.print(fermentationTypes[iterator] + ", ");
+//      } else {
+//        logFile.println(fermentationTypes[iterator]);
+//        Serial.println(fermentationTypes[iterator]);
+//      }
+//    }
+//    logFile.close();
+//  } else {
+//    Serial.println("Couldn't open log file");
+//  }
+
+  Serial.print("Elapsed, ");
+  for (int iterator = 0; iterator < arrayCount; iterator++) {
+    if (iterator != (arrayCount - 1)) {
+      Serial.print(fermentationTypes[iterator] + ", ");
+    } else {
+      Serial.println(fermentationTypes[iterator]);
     }
-    logFile.close();
-  } else {
-    Serial.println("Couldn't open log file");
   }
 
   setLoggingOff();
@@ -109,8 +123,10 @@ void loop() {
   showPhase();
 
   if (logging == true) {
-    lcd.setCursor(14, 1);
-    lcd.print("ON");
+//    lcd.setCursor(14, 1);
+//    lcd.print("ON");
+    lcd.setCursor(7, 1);
+    lcd.print(" " + timeToShow);
     log();
   } else {
     lcd.setCursor(13, 1);
@@ -129,11 +145,13 @@ void toggleLogging() {
 }
 
 void setLoggingOn() {
+  loggingTurnedOnAt = millis();
   logging = true;
 }
 
 void setLoggingOff() {
   logging = false;
+  timeToShow = "00:00:00";
 }
 
 void showPhase() {
@@ -165,17 +183,19 @@ void log() {
 }
 
 void logPreFerment() {
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
   // Write data to log file
-  File logFile = SD.open("brdlog.csv", FILE_WRITE);
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
   if (logFile) {
-    Serial.print(formatTime(millis()));
+    Serial.print(timeToShow);
     Serial.print(", ");
     Serial.print(Tc);
     Serial.print(", ");
     Serial.print(", ");
     Serial.print(", ");
     Serial.println(", ");
-    logFile.print(formatTime(millis()));
+    logFile.print(timeToShow);
     logFile.print(", ");
     logFile.print(Tc);
     logFile.print(", ");
@@ -189,7 +209,9 @@ void logPreFerment() {
 }
 
 void logAutolyse() {
-  Serial.print(formatTime(millis()));
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  Serial.print(timeToShow);
   Serial.print(", ");
   Serial.print(", ");
   Serial.print(Tc);
@@ -199,7 +221,9 @@ void logAutolyse() {
 }
 
 void logBulkFerment() {
-  Serial.print(formatTime(millis()));
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  Serial.print(timeToShow);
   Serial.print(", ");
   Serial.print(", ");
   Serial.print(", ");
@@ -209,7 +233,9 @@ void logBulkFerment() {
 }
 
 void logBenchRest() {
-  Serial.print(formatTime(millis()));
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  Serial.print(timeToShow);
   Serial.print(", ");
   Serial.print(", ");
   Serial.print(", ");
@@ -219,7 +245,9 @@ void logBenchRest() {
 }
 
 void logProofing() {
-  Serial.print(formatTime(millis()));
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  Serial.print(timeToShow);
   Serial.print(", ");
   Serial.print(", ");
   Serial.print(", ");
