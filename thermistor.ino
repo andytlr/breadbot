@@ -1,7 +1,15 @@
 
 #include <LiquidCrystal.h>
+#include <SD.h>
 
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+//LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(A4, A5, 5, 4, 3, 2);
+
+//SPI SD Card Pins
+//MOSI = Pin 11
+//MISO = Pin 12
+//SCLK = PIN 13
+int CS_pin = 8;
 
 int ThermistorPin = 0;
 int relayPin = 10;
@@ -12,10 +20,16 @@ float R1 = 10000;
 float logR2, R2, T, Tc, TcRounded;
 float Tdesired = 27.0;
 float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+unsigned long loggingTurnedOnAt;
+
+String timeToShow;
+
+File logFile;
 
 bool logging = false;
 
 String fermentationTypes[] = {"Pre-Ferment", "Autolyse", "Bulk Ferment", "Bench Rest", "Proofing"};
+String fermentationTypesAbbreviated[] = {"Pre-Fer", "Auto", "Bulk", "Rest", "Proof"};
 int selectedItem = 0;
 int arrayCount = sizeof(fermentationTypes) / sizeof(fermentationTypes[0]);
 
@@ -27,16 +41,36 @@ void setup() {
   digitalWrite(cycleButtonPin, HIGH);
   pinMode(logButtonPin, INPUT);
   digitalWrite(logButtonPin, HIGH);
-
-  Serial.print("Elapsed, ");
   
-  // Print out the header for the CSV
-  for (int iterator = 0; iterator < arrayCount; iterator++) {
-    if (iterator != (arrayCount - 1)) {
-      Serial.print(fermentationTypes[iterator] + ", ");
-    } else {
-      Serial.println(fermentationTypes[iterator]);
+  Serial.println("Initializing Card");
+  digitalWrite(CS_pin, HIGH);
+  pinMode(CS_pin, OUTPUT);
+
+  // Initialize Card
+  if (!SD.begin(CS_pin)) {
+    Serial.println("Card Failure");
+    return;
+  }
+  Serial.println("Card Ready");
+
+  // Write log file header
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    logFile.print("Elapsed, ");
+    Serial.print("Elapsed, ");
+    // Print out the header for the CSV
+    for (int iterator = 0; iterator < arrayCount; iterator++) {
+      if (iterator != (arrayCount - 1)) {
+        logFile.print(fermentationTypes[iterator] + ", ");
+        Serial.print(fermentationTypes[iterator] + ", ");
+      } else {
+        logFile.println(fermentationTypes[iterator]);
+        Serial.println(fermentationTypes[iterator]);
+      }
     }
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
   }
 
   setLoggingOff();
@@ -82,12 +116,16 @@ void loop() {
   showPhase();
 
   if (logging == true) {
-    lcd.setCursor(14, 1);
-    lcd.print("ON");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
+    lcd.setCursor(0, 1);
+    lcd.print(fermentationTypesAbbreviated[selectedItem]);
+    lcd.setCursor(7, 1);
+    lcd.print(" " + timeToShow);
     log();
   } else {
-    lcd.setCursor(13, 1);
-    lcd.print("OFF");
+//    lcd.setCursor(13, 1);
+//    lcd.print("Off");
   }
 
   delay(1000);
@@ -102,11 +140,13 @@ void toggleLogging() {
 }
 
 void setLoggingOn() {
+  loggingTurnedOnAt = millis();
   logging = true;
 }
 
 void setLoggingOff() {
   logging = false;
+  timeToShow = "00:00:00";
 }
 
 void showPhase() {
@@ -138,53 +178,133 @@ void log() {
 }
 
 void logPreFerment() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(Tc);
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.println(", ");
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  // Write data to log file
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    Serial.print(timeToShow);
+    Serial.print(", ");
+    Serial.print(Tc);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.println(", ");
+    logFile.print(timeToShow);
+    logFile.print(", ");
+    logFile.print(Tc);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.println(", ");
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 void logAutolyse() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(Tc);
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.println(", ");
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  // Write data to log file
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    Serial.print(timeToShow);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(Tc);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.println(", ");
+    logFile.print(timeToShow);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(Tc);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.println(", ");
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 void logBulkFerment() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(Tc);
-  Serial.print(", ");
-  Serial.println(", ");
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  // Write data to log file
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    Serial.print(timeToShow);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(Tc);
+    Serial.print(", ");
+    Serial.println(", ");
+    logFile.print(timeToShow);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(Tc);
+    logFile.print(", ");
+    logFile.println(", ");
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 void logBenchRest() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(Tc);
-  Serial.println(", ");
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  // Write data to log file
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    Serial.print(timeToShow);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(Tc);
+    Serial.println(", ");
+    logFile.print(timeToShow);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(Tc);
+    logFile.println(", ");
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 void logProofing() {
-  Serial.print(formatTime(millis()));
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.print(", ");
-  Serial.println(Tc);
+  unsigned long time = millis() - loggingTurnedOnAt;
+  timeToShow = formatTime(time);
+  // Write data to log file
+  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  if (logFile) {
+    Serial.print(timeToShow);
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.print(", ");
+    Serial.println(Tc);
+    logFile.print(timeToShow);
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.print(", ");
+    logFile.println(Tc);
+    logFile.close();
+  } else {
+    Serial.println("Couldn't open log file");
+  }
 }
 
 String formatTime(unsigned long time) {
