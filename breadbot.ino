@@ -1,8 +1,6 @@
 #include <LiquidCrystal.h>
 #include <SD.h>
 
-// test
-
 LiquidCrystal lcd(A4, A5, 5, 4, 3, 2);
 
 //SPI SD Card Pins
