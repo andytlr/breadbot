@@ -2,7 +2,6 @@
 #include <LiquidCrystal.h>
 #include <SD.h>
 
-//LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 LiquidCrystal lcd(A4, A5, 5, 4, 3, 2);
 
 //SPI SD Card Pins
@@ -54,6 +53,7 @@ void setup() {
   Serial.println("Card Ready");
 
   // Write log file header
+  // This happens every time you power on the Arduino.
   logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
   if (logFile) {
     logFile.print("Elapsed, ");
@@ -123,9 +123,6 @@ void loop() {
     lcd.setCursor(7, 1);
     lcd.print(" " + timeToShow);
     log();
-  } else {
-//    lcd.setCursor(13, 1);
-//    lcd.print("Off");
   }
 
   delay(1000);
@@ -335,12 +332,8 @@ String formatTime(unsigned long time) {
 
 void heaterOn() {
   digitalWrite(relayPin, HIGH);
-//  lcd.setCursor(0, 1);
-//  lcd.print("Heater on");
 }
 
 void heaterOff() {
   digitalWrite(relayPin, LOW);
-//  lcd.setCursor(0, 1);
-//  lcd.print("Heater off");
 }
