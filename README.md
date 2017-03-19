@@ -16,9 +16,10 @@ Breadbot is an Arduino Uno powered bread proofer and data logger.
 - A [clamp light][7] is a cheap lamp to use but I want to try using this [heating element][8] as it's 200W and would probably do just as well as an incandescent globe with less bulk.
 - The relay that comes in the kit isn't mounted on the board and I had all kinds of trouble with it. So I got [this one][14].
 - You need a [Micro SD Card Module][10] that does level shifting. The first one I bought didn't do this and I fried a card and had a few hours of frustration. Get a [lower capacity Micro SD card][9] (I think 32gb is the max). This needs to be formatted in either FAT16 or FAT32. It's recommended that you do it with the [SD Association SD Card Formatter][12].
-- I put it all inside a [Pelican Case][11] which I drilled holes in for power access and for the SD Card Module and buttons to be mounted on the outside of the case.
+- I put it all inside a [Pelican Case][11] which I drilled holes in for power access and for the SD Card Module and buttons to be mounted on the outside of the case. I needed to get a smaller breadboard to fit inside this size case. I used the one from [this kit][15], which was worth buying because it included another Ardiuno Uno.
 - I think I'll replace the buttons I have with [these more robust buttons][13]. I don't want the wires to disconnect in 6 months and have to work out how to wire it again.
 
+I spent a touch under $100 but you could do it for $80 or less. Rather than buying the kit you could get an Arduino, wires, resistors and thermistor individually.
 
 [1]: http://www.circuitbasics.com/arduino-thermistor-temperature-sensor-tutorial/
 [2]: http://www.circuitbasics.com/how-to-set-up-an-lcd-display-on-an-arduino/
@@ -34,3 +35,4 @@ Breadbot is an Arduino Uno powered bread proofer and data logger.
 [12]: https://www.sdcard.org/downloads/formatter_4/
 [13]: http://a.co/3CJpNLx
 [14]: http://a.co/bRE1c1w
+[15]: http://a.co/3I4pwpd
