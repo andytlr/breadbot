@@ -1,3 +1,6 @@
+// If power is lost and timer restarts, you can add timestamps in Google Sheets
+// =(TIME(3,48,23)+TIME(0,45,3))
+
 #include <LiquidCrystal.h>
 #include <SD.h>
 
