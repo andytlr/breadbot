@@ -95,8 +95,14 @@ void loop() {
   Tc = T - 273.15;
   Tc = round(Tc*10)/10.0;
   
-  // This rounds the temp to 0.25 increments, so that hopefully 0.1 changes don't flick the light on and off repeatedly.
-  TcRounded = round(Tc*4.0)/4.0;
+  // If the temp is above the desired temp.
+  // Round the temp to 0.20 increments, to avoid
+  // 0.1 changes flicking the light on and off repeatedly.
+  if (Tc > Tdesired) {
+    TcRounded = round(Tc * 5.0) / 5.0;
+  } else {
+    TcRounded = Tc;
+  }
 
   lcd.print(Tc,1);
   lcd.print((char)223);
