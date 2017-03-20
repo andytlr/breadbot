@@ -3,11 +3,11 @@
 
 LiquidCrystal lcd(A4, A5, 5, 4, 3, 2);
 
-//SPI SD Card Pins
-//MOSI = Pin 11
-//MISO = Pin 12
-//SCLK = PIN 13
-int CS_pin = 8;
+// SPI SD Card Pins
+// MOSI = Pin 11
+// MISO = Pin 12
+// SCLK = Pin 13
+int SD_CS_Pin = 8;
 
 int ThermistorPin = 0;
 int relayPin = 10;
@@ -41,15 +41,16 @@ void setup() {
   digitalWrite(logButtonPin, HIGH);
   
   Serial.println("Initializing Card");
-  digitalWrite(CS_pin, HIGH);
-  pinMode(CS_pin, OUTPUT);
+  digitalWrite(SD_CS_Pin, HIGH);
+  pinMode(SD_CS_Pin, OUTPUT);
 
   // Initialize Card
-  if (!SD.begin(CS_pin)) {
+  if (!SD.begin(SD_CS_Pin)) {
     Serial.println("Card Failure");
     return;
+  } else {
+    Serial.println("Card Ready");
   }
-  Serial.println("Card Ready");
 
   // Write log file header
   // This happens every time you power on the Arduino.
