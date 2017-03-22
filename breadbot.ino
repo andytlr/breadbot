@@ -55,11 +55,6 @@ void setup() {
     Serial.println("Card Ready");
   }
 
-  // Write log file header
-  // This happens every time you power on the Arduino.
-  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
-  logFile.close();
-
   setLoggingOff();
 }
 
