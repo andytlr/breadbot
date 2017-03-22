@@ -57,24 +57,8 @@ void setup() {
 
   // Write log file header
   // This happens every time you power on the Arduino.
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
-  if (logFile) {
-    logFile.print("Elapsed, ");
-    Serial.print("Elapsed, ");
-    // Print out the header for the CSV
-    for (int iterator = 0; iterator < arrayCount; iterator++) {
-      if (iterator != (arrayCount - 1)) {
-        logFile.print(fermentationTypes[iterator] + ", ");
-        Serial.print(fermentationTypes[iterator] + ", ");
-      } else {
-        logFile.println(fermentationTypes[iterator]);
-        Serial.println(fermentationTypes[iterator]);
-      }
-    }
-    logFile.close();
-  } else {
-    Serial.println("Couldn't open log file");
-  }
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
+  logFile.close();
 
   setLoggingOff();
 }
@@ -187,22 +171,10 @@ void logPreFerment() {
   unsigned long time = millis() - loggingTurnedOnAt;
   timeToShow = formatTime(time);
   // Write data to log file
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
   if (logFile) {
-    Serial.print(timeToShow);
-    Serial.print(", ");
-    Serial.print(Tc);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.println(", ");
-    logFile.print(timeToShow);
-    logFile.print(", ");
-    logFile.print(Tc);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.println(", ");
+    Serial.println("\{\"stage\": \"Pre-Ferment\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
+    logFile.println("\{\"stage\": \"Pre-Ferment\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
     logFile.close();
   } else {
     Serial.println("Couldn't open log file");
@@ -213,22 +185,10 @@ void logAutolyse() {
   unsigned long time = millis() - loggingTurnedOnAt;
   timeToShow = formatTime(time);
   // Write data to log file
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
   if (logFile) {
-    Serial.print(timeToShow);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(Tc);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.println(", ");
-    logFile.print(timeToShow);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(Tc);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.println(", ");
+    Serial.println("\{\"stage\": \"Autolyse\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
+    logFile.println("\{\"stage\": \"Autolyse\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
     logFile.close();
   } else {
     Serial.println("Couldn't open log file");
@@ -239,22 +199,10 @@ void logBulkFerment() {
   unsigned long time = millis() - loggingTurnedOnAt;
   timeToShow = formatTime(time);
   // Write data to log file
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
   if (logFile) {
-    Serial.print(timeToShow);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(Tc);
-    Serial.print(", ");
-    Serial.println(", ");
-    logFile.print(timeToShow);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(Tc);
-    logFile.print(", ");
-    logFile.println(", ");
+    Serial.println("\{\"stage\": \"Bulk Ferment\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
+    logFile.println("\{\"stage\": \"Bulk Ferment\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
     logFile.close();
   } else {
     Serial.println("Couldn't open log file");
@@ -265,22 +213,10 @@ void logBenchRest() {
   unsigned long time = millis() - loggingTurnedOnAt;
   timeToShow = formatTime(time);
   // Write data to log file
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
   if (logFile) {
-    Serial.print(timeToShow);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(Tc);
-    Serial.println(", ");
-    logFile.print(timeToShow);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(Tc);
-    logFile.println(", ");
+    Serial.println("\{\"stage\": \"Bench Rest\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
+    logFile.println("\{\"stage\": \"Bench Rest\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
     logFile.close();
   } else {
     Serial.println("Couldn't open log file");
@@ -291,22 +227,10 @@ void logProofing() {
   unsigned long time = millis() - loggingTurnedOnAt;
   timeToShow = formatTime(time);
   // Write data to log file
-  logFile = SD.open("BRDLOG.CSV", FILE_WRITE);
+  logFile = SD.open("BRDLOG.TXT", FILE_WRITE);
   if (logFile) {
-    Serial.print(timeToShow);
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.print(", ");
-    Serial.println(Tc);
-    logFile.print(timeToShow);
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.print(", ");
-    logFile.println(Tc);
+    Serial.println("\{\"stage\": \"Proofing\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
+    logFile.println("\{\"stage\": \"Proofing\", \"time\": \"" + timeToShow + "\", \"temp\": " + Tc + "\},");
     logFile.close();
   } else {
     Serial.println("Couldn't open log file");
